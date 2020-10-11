@@ -3,6 +3,12 @@
 
 using namespace std;
 
+/**
+ * Splits the input string into a vector of tokens
+ * @param input The string to split
+ * @param delimiters A string containing all the characters to consider as delimiters
+ * @return A vector of tokens
+ */
 vector<string> tokenize(string input, string delimiters) {
 	vector<string> tokens;
 	string curr = "";
