@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -966,11 +967,59 @@ class Polygon {
 		}
 	}
 
+	void RemoveCollinearPoints() {
+		for(int i = vertices.size() - 1; i >= 0; i--) {
+			if(Line(vertices[(i - 1 + vertices.size()) % vertices.size()], vertices[(i + 1) % vertices.size()]).IsCollinear(vertices[i])) {
+				vertices.erase(vertices.begin() + i);
+			}
+		}
+	}
+
 	Line GetEdge(int index) {
 		Point v1(vertices[index % vertices.size()]);
 		Point v2(vertices[(index + 1) % vertices.size()]);
 		Line edge(v1, v2);
 		return edge;
+	}
+
+	Polygon GetConvexHull() {
+		int lowest = 0;
+		for(int i = 1; i < vertices.size(); i++) {
+			if(vertices[i].GetY() < vertices[lowest].GetY()) {
+				lowest = i;
+			} else if (vertices[i].GetY() == vertices[lowest].GetY()) {
+				if(vertices[i].GetX() < vertices[lowest].GetX()) {
+					lowest = i;
+				}
+			}
+		}
+		vector<Point> sortedVertices;
+		for(int i = 0; i < vertices.size(); i++) {
+			if(i != lowest) {
+				sortedVertices.push_back(vertices[i]);
+			}
+		}
+		Point lowestPoint = vertices[lowest];
+		Point lowestDX = lowestPoint + Point(1, 0);
+		sort(sortedVertices.begin(), sortedVertices.end(), [lowestPoint, lowestDX](Point a, Point b) -> bool {
+			if(Angle(a, lowestPoint, lowestDX) < Angle(b, lowestPoint, lowestDX)) {
+				return true;
+			} else if (Angle(a, lowestPoint, lowestDX) == Angle(b, lowestPoint, lowestDX)) {
+				return (a - lowestPoint).Magnitude() < (b - lowestPoint).Magnitude();
+			}
+			return false;
+		});
+		vector<Point> hull;
+		hull.push_back(lowestPoint);
+		hull.push_back(sortedVertices[0]);
+		for(int i = 1; i < sortedVertices.size(); i++) {
+			while(!CCW(sortedVertices[i], hull[hull.size() - 1], hull[hull.size() - 2])) {
+				hull.pop_back();
+			}
+			hull.push_back(sortedVertices[i]);
+		}
+		Polygon convexHull(hull);
+		return convexHull;
 	}
 };
 
