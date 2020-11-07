@@ -9,14 +9,14 @@ bool IsPrime (unsigned long long int n) {
 	if(n == 1) {
 		return 0;
 	}
-    const unsigned long long int sprp32_base[] = {2, 7, 61, 0};
-    const unsigned long long int sprp64_base[] = {2, 325, 9375, 28178, 450775, 9780504, 1795265022, 0};
-    const unsigned long long int *sprp_base;
-    if((n & 1) == 0) {
-        return n == 2;
+	const unsigned long long int sprp32_base[] = {2, 7, 61, 0};
+	const unsigned long long int sprp64_base[] = {2, 325, 9375, 28178, 450775, 9780504, 1795265022, 0};
+	const unsigned long long int *sprp_base;
+	if((n & 1) == 0) {
+		return n == 2;
 	}
-    sprp_base = (n <= 4294967295U) ? sprp32_base : sprp64_base;
-    for(; *sprp_base != 0; sprp_base++) {
+	sprp_base = (n <= 4294967295U) ? sprp32_base : sprp64_base;
+	for(; *sprp_base != 0; sprp_base++) {
 		unsigned long long int a = *sprp_base, m = n - 1, r, y, s = 1;
 		while ((m & (1UL << s)) == 0) {
 			s++;
@@ -48,5 +48,5 @@ bool IsPrime (unsigned long long int n) {
 			return false;
 		}
 	}
-    return true;
+	return true;
 }
