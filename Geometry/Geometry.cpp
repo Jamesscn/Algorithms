@@ -336,6 +336,22 @@ class Matrix {
 		return submatrix;
 	}
 
+	Matrix Multiply(Matrix mat) {
+		if(GetColumns() != mat.GetRows()) {
+			cerr << "Invalid matrix sizes for multiplication" << endl;
+			return *this;
+		}
+		Matrix multiplication(GetRows(), mat.GetColumns());
+		for(int i = 0; i < GetRows(); i++) {
+			for(int j = 0; j < mat.GetColumns(); j++) {
+				for(int k = 0; k < GetColumns(); k++) {
+					multiplication.Set(i, j, multiplication.Get(i, j) + Get(i, k) * mat.Get(k, j));
+				}
+			}
+		}
+		return multiplication;
+	}
+
 	Point Multiply(Point Xvec) {
 		if(GetColumns() != Xvec.GetRank()) {
 			cerr << "Invalid matrix/vector size for transformation" << endl;
@@ -351,6 +367,26 @@ class Matrix {
 			}
 			return Point(components);
 		}
+	}
+
+	Matrix Power(int power) {
+		if(GetRows() != GetColumns()) {
+			cerr << "Invalid matrix size for exponentiation" << endl;
+			return *this;
+		}
+		Matrix result(GetRows(), GetColumns());
+		for(int i = 0; i < GetRows(); i++) {
+			result.Set(i, i, 1);
+		}
+		Matrix baseMatrix = *this;
+		while(power > 0) {
+			if(power % 2 == 1) {
+				result = result.Multiply(baseMatrix);
+			}
+			baseMatrix = baseMatrix.Multiply(baseMatrix);
+			power /= 2;
+		}
+		return result;
 	}
 
 	long double GetDeterminant() {
